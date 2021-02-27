@@ -20,8 +20,6 @@ from  models.roberta_softmax import RobertaModelConfig as myconfig
 from keras_bert import tokenizer
 from keras.utils.np_utils import to_categorical
 
-
-
 if __name__=="__main__":
     model_name = "roberta_softmax"
     ModelConfig = myconfig('roberta_softmax')
@@ -37,6 +35,7 @@ if __name__=="__main__":
     adam = tf.keras.optimizers.Adam(ModelConfig.learning_rate)
     model.compile(
             loss = "categorical_crossentropy",
+#            loss = "binary_crossentropy",
             optimizer=adam,
             metrics=['accuracy']
             )

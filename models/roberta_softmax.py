@@ -27,8 +27,8 @@ class RobertaModelConfig(GlobalData):
         super().__init__(modelname)
         self.num_epochs = 10
         self.max_len = 128 
-        self.batch_size = 256 
-        self.learning_rate = 0.001
+        self.batch_size = 32 
+        self.learning_rate = 0.00005
         self.nclass = 2
         # roberta模型配置文件
         #self.global_config = GlobalData(model_name)
@@ -47,6 +47,8 @@ def roberta_softmax(ModelConfig):
     """
     bert_model = load_trained_model_from_checkpoint(ModelConfig.config_path,
             ModelConfig.checkpoint_path, seq_len=None)
+    for l in bert_model.layers:
+        l.trainable = True
     text_id = tf.keras.layers.Input(shape=(ModelConfig.max_len,),
             dtype=tf.int32, name='text_id')
     segment_id = tf.keras.layers.Input(shape=(ModelConfig.max_len, ),

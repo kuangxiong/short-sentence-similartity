@@ -76,7 +76,7 @@ class BertDataPreload(object):
         for i in range(N):
             if training==True:
                 seg1, seg2, label = train_text[i][0], train_text[i][1], train_text[i][2]
-                data_Y.append(label)
+                data_Y.append(int(label))
             else:
                 seg1, seg2 = train_text[i][0], train_text[i][1]
 
