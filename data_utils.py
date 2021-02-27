@@ -73,9 +73,7 @@ class BertDataPreload(object):
         data_X_ind, data_X_seg = [], []
         data_Y = []
         N = len(train_text)
-        print(N)
         for i in range(N):
-            print(i, train_text[i])
             if training==True:
                 seg1, seg2, label = train_text[i][0], train_text[i][1], train_text[i][2]
                 data_Y.append(label)
@@ -114,8 +112,9 @@ if __name__=='__main__':
     config = RobertaModelConfig("bert-wwt-ext")
     print(config)
     BertData = BertDataPreload(config)
-    train_data, test_data = BertData.load_data()
+    train_data, test_data, rest = BertData.load_data()
     data_X_ind, data_X_seg, data_Y = BertData.bert_text2id(train_data)
+    print(rest)
     print(data_X_ind[0])
     
    # print(train_data)

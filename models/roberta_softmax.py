@@ -11,6 +11,7 @@ import os
 import tensorflow as tf 
 from tensorflow import keras 
 from keras_bert import load_trained_model_from_checkpoint
+from keras.layers import Lambda
 
 import sys 
 sys.path.append("..")
@@ -26,8 +27,10 @@ class RobertaModelConfig(GlobalData):
     def __init__(self, modelname):
         super().__init__(modelname)
         self.num_epochs = 10
-        self.max_len = 50 
+        self.max_len = 128 
         self.batch_size = 128 
+        self.learning_rate = 0.0001
+        self.nclass = 2
         # roberta模型配置文件
         #self.global_config = GlobalData(model_name)
         #self.bert_config_path = global_config.config_path 
@@ -49,7 +52,10 @@ def roberta_softmax(ModelConfig):
             dtype=tf.int32, name='text_id')
     segment_id = tf.keras.layers.Input(shape=(ModelConfig.max_len, ),
             dtype=tf.int32, name='segment')
-    output = bert_model([text_id, segment_id])
+    bert_output = bert_model([text_id, segment_id])
+    first_bert_output = Lambda(lambda x:x[:,0])(bert_output)
+
+    output = keras.layers.Dense(ModelConfig.nclass, activation='softmax')(first_bert_output)
 
     model = keras.Model(inputs=[text_id, segment_id], outputs=[output])
     return model
