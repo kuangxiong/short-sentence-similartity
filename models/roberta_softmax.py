@@ -23,13 +23,12 @@ class RobertaModelConfig(GlobalData):
         RobertaModelConfig 模型配置参数
     """
 
-
     def __init__(self, modelname):
         super().__init__(modelname)
         self.num_epochs = 10
         self.max_len = 128 
-        self.batch_size = 128 
-        self.learning_rate = 0.0001
+        self.batch_size = 256 
+        self.learning_rate = 0.001
         self.nclass = 2
         # roberta模型配置文件
         #self.global_config = GlobalData(model_name)
@@ -53,7 +52,7 @@ def roberta_softmax(ModelConfig):
     segment_id = tf.keras.layers.Input(shape=(ModelConfig.max_len, ),
             dtype=tf.int32, name='segment')
     bert_output = bert_model([text_id, segment_id])
-    first_bert_output = Lambda(lambda x:x[:,0])(bert_output)
+    first_bert_output = Lambda(lambda x: x[:,0])(bert_output)
 
     output = keras.layers.Dense(ModelConfig.nclass, activation='softmax')(first_bert_output)
 

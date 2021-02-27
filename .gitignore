@@ -1,2 +1,5 @@
 data_source/
 data_model/
+save_model/
+data/
+__pycache__/

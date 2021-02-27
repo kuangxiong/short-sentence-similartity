@@ -40,12 +40,16 @@ if __name__=="__main__":
             optimizer=adam,
             metrics=['accuracy']
             )
+    # 保存模型的目录
     save_path = ModelConfig.save_model
+    # 若文件不存在，创建文件
+    if os.path.exists(save_path):
+        os.mkdir(save_path)
     checkpoint_cb = keras.callbacks.ModelCheckpoint(
             f"{save_path}bert_model.h5", save_best_only=True
             )
     early_stopping_cb = keras.callbacks.EarlyStopping(
-            patience=4, 
+            patience=1, 
             restore_best_weights=True
         )
     train_X_test, train_X_seg = np.asarray(data_X_ind), np.asarray(data_X_seg)

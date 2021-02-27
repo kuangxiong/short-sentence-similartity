@@ -20,7 +20,7 @@ class  GlobalData(object):
                 'data/data_source/gaiic_track3_round1_train_20210220.tsv')
 
         model_path = os.path.join(BASE_PATH,
-                "data/data_model/chinese_roberta_wwm_ext_L-12_H-768_A-12")
+                "data/model_source/chinese_roberta_wwm_ext_L-12_H-768_A-12")
         self.config_path = os.path.join(model_path, 'bert_config.json')
         self.vocab_path = os.path.join(model_path, 'vocab.txt')
         self.checkpoint_path = os.path.join(model_path, "bert_model.ckpt")
