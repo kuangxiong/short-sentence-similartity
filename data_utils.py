@@ -38,16 +38,17 @@ class BertDataPreload(object):
         with codecs.open(self.modelconfig.train_path, "r", "utf-8") as reader:
             for line in reader:
                 segment = line.strip()
-                tmp_list = segment.split()
+                tmp_list = segment.split('\t')
+                #print(tmp_list)
                 if len(tmp_list)==3:
-                    train_data.append(segment.split())
+                    train_data.append(tmp_list)
 
         with codecs.open(self.modelconfig.test_path, "r", "utf-8") as reader:
             for line in reader:
                 segment = line.strip()
                 tmp_list = segment.split()
                 if len(tmp_list)==2:
-                    test_data.append(segment.split())
+                    test_data.append(tmp_list)
 
         return train_data, test_data
                 
@@ -63,44 +64,55 @@ class BertDataPreload(object):
         training :
             training 数据是否是用于训练
         """
-        token_dict = {}
-        with codecs.open(self.modelconfig.vocab_path, "r", "utf-8") as reader:
-            for line in reader:
-                token = line.strip()
-                token_dict[token] = len(token_dict)
-
-        tokenizer = Tokenizer(token_dict)
+#        token_dict = {}
+#        with codecs.open(self.modelconfig.vocab_path, "r", "utf-8") as reader:
+#            for line in reader:
+#                token = line.strip()
+#                token_dict[token] = len(token_dict)
+#
+#        tokenizer = Tokenizer(token_dict)
         data_X_ind, data_X_seg = [], []
         data_Y = []
         N = len(train_text)
         for i in range(N):
             if training==True:
-                seg1, seg2, label = train_text[i][0], train_text[i][1], train_text[i][2]
+                seg1, seg2, label = train_text[i][0].split(), train_text[i][1].split(), train_text[i][2]
                 data_Y.append(int(label))
             else:
-                seg1, seg2 = train_text[i][0], train_text[i][1]
-
-            indices, segments = tokenizer.encode(first=seg1, second=seg2,
-                    max_len = self.modelconfig.max_len)
+                seg1, seg2 = train_text[i][0].split(), train_text[i][1].split()
+#            print(11111, seg1, seg2)
+#            indices, segments = tokenizer.encode(first=seg1, second=seg2,
+#                    max_len = self.modelconfig.max_len)
+            indices = [101] + list(map(int, seg1)) + [102] + list(map(int, seg2)) + [102]
+            segments = [0] *(len(seg1) + 2) + [1]*(len(seg2)+1)
+            max_len = self.modelconfig.max_len
+            if len(indices) <= max_len:
+                indices = indices + [0] * (max_len - len(indices))
+                segments = segments + [0] * (max_len - len(segments))
+            else:
+                indices = indices[:max_len-1] + [102]
+                segments = segments[:max_len]
+                
             data_X_ind.append(np.array(indices))
             data_X_seg.append(np.array(segments))
-        data_X_ind = keras.preprocessing.sequence.pad_sequences(
-                data_X_ind, 
-                maxlen = self.modelconfig.max_len,
-                dtype="int32",
-                padding="post",
-                truncating="post",
-                value = 0.0
-                )
-
-        data_X_seg = keras.preprocessing.sequence.pad_sequences(
-                data_X_seg, 
-                maxlen = self.modelconfig.max_len,
-                dtype="int32",
-                padding="post",
-                truncating="post",
-                value=0
-                )
+            
+#        data_X_ind = keras.preprocessing.sequence.pad_sequences(
+#                data_X_ind, 
+#                maxlen = self.modelconfig.max_len,
+#                dtype="int32",
+#                padding="post",
+#                truncating="post",
+#                value = 0.0
+#                )
+#
+#        data_X_seg = keras.preprocessing.sequence.pad_sequences(
+#                data_X_seg, 
+#                maxlen = self.modelconfig.max_len,
+#                dtype="int32",
+#                padding="post",
+#                truncating="post",
+#                value=0
+#                )
         if training == True:
             return data_X_ind, data_X_seg, data_Y
         else:
@@ -110,12 +122,11 @@ class BertDataPreload(object):
 if __name__=='__main__':
 
     config = RobertaModelConfig("bert-wwt-ext")
-    print(config)
     BertData = BertDataPreload(config)
-    train_data, test_data, rest = BertData.load_data()
+    train_data, test_data = BertData.load_data()
     data_X_ind, data_X_seg, data_Y = BertData.bert_text2id(train_data)
-    print(rest)
     print(data_X_ind[0])
+    print(data_X_seg[0])
     
    # print(train_data)
     

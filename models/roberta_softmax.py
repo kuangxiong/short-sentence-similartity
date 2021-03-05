@@ -27,9 +27,10 @@ class RobertaModelConfig(GlobalData):
         super().__init__(modelname)
         self.num_epochs = 10
         self.max_len = 128 
-        self.batch_size = 32 
+        self.batch_size = 32
         self.learning_rate = 0.00005
         self.nclass = 2
+        self.dropout = 0.5
         # roberta模型配置文件
         #self.global_config = GlobalData(model_name)
         #self.bert_config_path = global_config.config_path 
@@ -56,7 +57,10 @@ def roberta_softmax(ModelConfig):
     bert_output = bert_model([text_id, segment_id])
     first_bert_output = Lambda(lambda x: x[:,0])(bert_output)
 
-    output = keras.layers.Dense(ModelConfig.nclass, activation='softmax')(first_bert_output)
+#    dropout = keras.layers.Dropout(ModelConfig.dropout)(first_bert_output,
+#            training=True)
+    output = keras.layers.Dense(ModelConfig.nclass,
+            activation='softmax')(first_bert_output)
 
     model = keras.Model(inputs=[text_id, segment_id], outputs=[output])
     return model

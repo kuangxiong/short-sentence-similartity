@@ -19,6 +19,7 @@ from models.roberta_softmax import roberta_softmax as mymodel
 from  models.roberta_softmax import RobertaModelConfig as myconfig 
 from keras_bert import tokenizer
 from keras.utils.np_utils import to_categorical
+from loss_func import focal_loss_fixed
 
 if __name__=="__main__":
     model_name = "roberta_softmax"
@@ -31,11 +32,18 @@ if __name__=="__main__":
     data_Y = to_categorical(int_Y, num_classes=None)
     print(data_Y[1])
     
-    model = mymodel(ModelConfig)
+
+    model_file = os.path.join(ModelConfig.save_model,"bert_model.h5")
+    if os.path.isfile(model_file):
+        model = keras.models.load_model(model_file)
+    else:
+        print("load_model")
+        model = mymodel(ModelConfig)
     adam = tf.keras.optimizers.Adam(ModelConfig.learning_rate)
     model.compile(
             loss = "categorical_crossentropy",
 #            loss = "binary_crossentropy",
+#            loss = focal_loss_fixed,
             optimizer=adam,
             metrics=['accuracy']
             )
@@ -46,9 +54,9 @@ if __name__=="__main__":
         os.mkdir(save_path)
     checkpoint_cb = keras.callbacks.ModelCheckpoint(
             f"{save_path}bert_model.h5", save_best_only=True
-            )
+        )
     early_stopping_cb = keras.callbacks.EarlyStopping(
-            patience=1, 
+            patience=4, 
             restore_best_weights=True
         )
     train_X_test, train_X_seg = np.asarray(data_X_ind), np.asarray(data_X_seg)

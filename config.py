@@ -15,9 +15,9 @@ class  GlobalData(object):
     def __init__(self, model_name):
         self.model_name = model_name
         self.train_path = os.path.join(BASE_PATH,
-                'data/data_source/gaiic_track3_round1_train_20210220.tsv')
+                'data/data_source/gaiic_track3_round1_train_20210228.tsv')
         self.test_path = os.path.join(BASE_PATH,
-                'data/data_source/gaiic_track3_round1_train_20210220.tsv')
+                'data/data_source/gaiic_track3_round1_testA_20210228.tsv')
 
         model_path = os.path.join(BASE_PATH,
                 "data/model_source/chinese_roberta_wwm_ext_L-12_H-768_A-12")
